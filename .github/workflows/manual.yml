@@ -38,6 +38,7 @@ jobs:
           echo "SHOULD_CONTINUE=false" >> $GITHUB_ENV
           exit 0  # 直接退出
         fi
+        echo "SHOULD_CONTINUE=true" >> $GITHUB_ENV
         if [ -n "$PDF_FILE" ]; then
           mv "$PDF_FILE" "PDF/${TIME}.pdf"
         fi
