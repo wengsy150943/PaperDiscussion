@@ -12,7 +12,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Extract commit message
-      run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+      run: echo "COMMIT_MESSAGE='$(git log -1 --pretty=%B)'" >> $GITHUB_ENV
 
     - name: Check if commit message matches format
       run: |
@@ -29,8 +29,14 @@ jobs:
 
     - name: Rename and move PDF and PPT/PPTX files
       run: |
-        PDF_FILE=$(git diff --name-only --diff-filter=A | grep -i '.pdf')
-        PPT_FILE=$(git diff --name-only --diff-filter=A | grep -i '.pptx\|.ppt')
+        PDF_FILE=$(git diff --name-only --diff-filter=A | grep -i '.pdf') || true
+        PPT_FILE=$(git diff --name-only --diff-filter=A | grep -i '.pptx\|.ppt') || true
+    
+        # 检查是否找到了文件
+        if [ -z "$PDF_FILE" ] && [ -z "$PPT_FILE" ]; then
+          echo "No PDF or PPT files found. Exiting."
+          exit 0  # 直接退出
+        fi
         if [ -n "$PDF_FILE" ]; then
           mv "$PDF_FILE" "PDF/${TIME}.pdf"
         fi
