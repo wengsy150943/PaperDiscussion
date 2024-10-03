@@ -10,6 +10,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
 
     - name: Check if commit message matches format
       run: |
@@ -27,9 +29,8 @@ jobs:
 
     - name: Rename and move PDF and PPT/PPTX files
       run: |
-        git log --name-only --pretty="" -1
-        PDF_FILE=$(git log --name-only --pretty="" -1 | grep -i '.pdf') || true
-        PPT_FILE=$(git log --name-only --pretty="" -1 | grep -i '.pptx\|.ppt') || true
+        PDF_FILE=$(git diff --name-only --diff-filter=A HEAD^ HEAD | grep -i '.pdf') || true
+        PPT_FILE=$(git diff --name-only --diff-filter=A HEAD^ HEAD | grep -i '.pptx\|.ppt') || true
     
         # 检查是否找到了文件
         if [ -z "$PDF_FILE" ] || [ -z "$PPT_FILE" ]; then
