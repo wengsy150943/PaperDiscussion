@@ -16,16 +16,17 @@ jobs:
 
     - name: Check if commit message matches format
       run: |
+        COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+        # 提取 commit message 中的字段
         if [[ "$COMMIT_MESSAGE" =~ ^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)$ ]]; then
-          echo "MATCHED=true" >> $GITHUB_ENV
           echo "TIME=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+          echo "TITLE=${BASH_REMATCH[2]}" >> $GITHUB_ENV
+          echo "CONF=${BASH_REMATCH[3]}" >> $GITHUB_ENV
+          echo "YEAR=${BASH_REMATCH[4]}" >> $GITHUB_ENV
+          echo "NAME=${BASH_REMATCH[5]}" >> $GITHUB_ENV
         else
-          echo "MATCHED=false" >> $GITHUB_ENV
+          echo "Commit message does not match the format, exiting." && exit 0
         fi
-
-    - name: Exit if commit message does not match
-      if: env.MATCHED != 'true'
-      run: echo "Commit message does not match the format, exiting." && exit 0
 
     - name: Rename and move PDF and PPT/PPTX files
       run: |
@@ -48,16 +49,7 @@ jobs:
 
     - name: Insert formatted comment into README.md
       if: env.SHOULD_CONTINUE == 'true'
-      run: |
-        # 提取 commit message 中的字段
-        if [[ "$COMMIT_MESSAGE" =~ ^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)$ ]]; then
-          TIME=${BASH_REMATCH[1]}
-          TITLE=${BASH_REMATCH[2]}
-          CONF=${BASH_REMATCH[3]}
-          YEAR=${BASH_REMATCH[4]}
-          NAME=${BASH_REMATCH[5]}
-        fi
-        
+      run: |     
         # 确认PPT文件的扩展名
         PPT_EXTENSION=$(ls PPT/${TIME}.pptx 2>/dev/null && echo "pptx" || echo "ppt")
         
