@@ -50,8 +50,15 @@ jobs:
     - name: Insert formatted comment into README.md
       if: env.SHOULD_CONTINUE == 'true'
       run: |     
-        # 确认PPT文件的扩展名
-        PPT_EXTENSION=$(ls PPT/${TIME}.pptx 2>/dev/null && echo "pptx" || echo "ppt")
+        # 确定文件的扩展名
+        if [ -f "PPT/${TIME}.pptx" ]; then
+          PPT_EXTENSION="pptx"
+        elif [ -f "PPT/${TIME}.ppt" ]; then
+          PPT_EXTENSION="ppt"
+        else
+          echo "No PPT or PPTX files found."
+          exit 1  # 直接退出，确保后续步骤不执行
+        fi
         
         # 创建插入的格式
         FORMATTED_MESSAGE="| $TIME | $TITLE | $CONF | $YEAR | [PDF](./PDF/${TIME}.pdf)/[PPT](./PPT/${TIME}.${PPT_EXTENSION}) | $NAME |"
