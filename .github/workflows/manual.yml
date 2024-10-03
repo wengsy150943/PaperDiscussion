@@ -55,10 +55,13 @@ jobs:
         
         # 创建插入的格式
         FORMATTED_MESSAGE="| $TIME | $TITLE | $CONF | $YEAR | [PDF](./PDF/${TIME}.pdf)/[PPT](./PPT/${TIME}.${PPT_EXTENSION}) | $NAME |"
-        
-        # 插入到 README.md 的第 17 行
-        # 使用 printf 插入到 README.md 的第 17 行
-        printf "%s\n" "$FORMATTED_MESSAGE" | sed -i "17i $(cat)" README.md
+        echo "$FORMATTED_MESSAGE"
+        # 在 README.md 中插入内容
+        {
+          head -n 16 README.md  # 输出前 16 行
+          echo "$FORMATTED_MESSAGE"  # 输出新的格式化行
+          tail -n +17 README.md  # 输出第 17 行及其后面的内容
+        } > temp.md && mv temp.md README.md
 
 
     - name: Commit and push changes
