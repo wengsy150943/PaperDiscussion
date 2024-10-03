@@ -2,8 +2,6 @@ name: Rename and Move Files
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   rename-and-move:
