@@ -33,7 +33,7 @@ jobs:
         PPT_FILE=$(git diff --name-only --diff-filter=A | grep -i '.pptx\|.ppt') || true
     
         # 检查是否找到了文件
-        if [ -z "$PDF_FILE" ] && [ -z "$PPT_FILE" ]; then
+        if [ -z "$PDF_FILE" ] || [ -z "$PPT_FILE" ]; then
           echo "No PDF or PPT files found. Exiting."
           exit 0  # 直接退出
         fi
