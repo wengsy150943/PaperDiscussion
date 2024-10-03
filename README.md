@@ -14,6 +14,7 @@
 
 |    时间    |                             题目                             |         会议         | 年份 |                             链接                             | 宣讲人 |
 | :--------: | :----------------------------------------------------------: | :------------------: | :--: | :----------------------------------------------------------: | ------ |
+|  |  |  |  | [PDF](./PDF/.pdf)/[PPT](./PPT/.pptx) |  |
 | 2024.10.03 | AAA | Bench | 2025 | [PDF](./PDF/2024.10.03.pdf)/[PPT](./PPT/2024.10.03.pptx) | wsy |
 | 2024.09.29 | Towards optimal transaction scheduling | VLDB | 2024 | [PDF](./PDF/2024.09.29.pdf)/[PPT](./PPT/2024.09.29.pptx) | 翁思扬 |
 | 2024.09.26 | Modeling Shifting Workloads for Learned Database Systems | SIGMOD | 2024 | [PDF](./PDF/2024.09.26.pdf)/[PPT](./PPT/2024.09.26.pptx) | 罗瑶 |
