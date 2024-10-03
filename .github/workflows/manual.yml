@@ -35,7 +35,8 @@ jobs:
         # 检查是否找到了文件
         if [ -z "$PDF_FILE" ] || [ -z "$PPT_FILE" ]; then
           echo "No PDF or PPT files found. Exiting."
-          exit 1  # 直接退出
+          echo "SHOULD_CONTINUE=false" >> $GITHUB_ENV
+          exit 0  # 直接退出
         fi
         if [ -n "$PDF_FILE" ]; then
           mv "$PDF_FILE" "PDF/${TIME}.pdf"
@@ -46,7 +47,7 @@ jobs:
         fi
 
     - name: Insert formatted comment into README.md
-      if: success()
+      if: env.SHOULD_CONTINUE == 'true'
       run: |
         # 提取 commit message 中的字段
         if [[ "$COMMIT_MESSAGE" =~ \[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\] ]]; then
@@ -67,7 +68,7 @@ jobs:
         sed -i "17i $FORMATTED_MESSAGE" README.md
 
     - name: Commit and push changes
-      if: success()
+      if: env.SHOULD_CONTINUE == 'true'
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
