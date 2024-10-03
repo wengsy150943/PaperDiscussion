@@ -16,7 +16,7 @@ jobs:
 
     - name: Check if commit message matches format
       run: |
-        if [[ "$COMMIT_MESSAGE" =~ \[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\] ]]; then
+        if [[ "$COMMIT_MESSAGE" =~ ^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)$ ]]; then
           echo "MATCHED=true" >> $GITHUB_ENV
           echo "TIME=${BASH_REMATCH[1]}" >> $GITHUB_ENV
         else
@@ -50,7 +50,7 @@ jobs:
       if: env.SHOULD_CONTINUE == 'true'
       run: |
         # 提取 commit message 中的字段
-        if [[ "$COMMIT_MESSAGE" =~ \[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\] ]]; then
+        if [[ "$COMMIT_MESSAGE" =~ ^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)$ ]]; then
           TIME=${BASH_REMATCH[1]}
           TITLE=${BASH_REMATCH[2]}
           CONF=${BASH_REMATCH[3]}
