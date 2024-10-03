@@ -57,7 +57,9 @@ jobs:
         FORMATTED_MESSAGE="| $TIME | $TITLE | $CONF | $YEAR | [PDF](./PDF/${TIME}.pdf)/[PPT](./PPT/${TIME}.${PPT_EXTENSION}) | $NAME |"
         
         # 插入到 README.md 的第 17 行
-        sed -i "17i $FORMATTED_MESSAGE" README.md
+        # 使用 printf 插入到 README.md 的第 17 行
+        printf "%s\n" "$FORMATTED_MESSAGE" | sed -i "17i $(cat)" README.md
+
 
     - name: Commit and push changes
       if: env.SHOULD_CONTINUE == 'true'
