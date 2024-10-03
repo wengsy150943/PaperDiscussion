@@ -1,0 +1,70 @@
+name: Rename and Move Files
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  rename-and-move:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Extract commit message
+      run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
+    - name: Check if commit message matches format
+      run: |
+        if [[ "$COMMIT_MESSAGE" =~ \[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\] ]]; then
+          echo "MATCHED=true" >> $GITHUB_ENV
+          echo "TIME=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+        else
+          echo "MATCHED=false" >> $GITHUB_ENV
+        fi
+
+    - name: Exit if commit message does not match
+      if: env.MATCHED != 'true'
+      run: echo "Commit message does not match the format, exiting." && exit 0
+
+    - name: Rename and move PDF and PPT/PPTX files
+      run: |
+        PDF_FILE=$(git diff --name-only --diff-filter=A | grep -i '.pdf')
+        PPT_FILE=$(git diff --name-only --diff-filter=A | grep -i '.pptx\|.ppt')
+        if [ -n "$PDF_FILE" ]; then
+          mv "$PDF_FILE" "PDF/${TIME}.pdf"
+        fi
+        if [ -n "$PPT_FILE" ]; then
+          EXTENSION="${PPT_FILE##*.}"
+          mv "$PPT_FILE" "PPT/${TIME}.${EXTENSION}"
+        fi
+
+    - name: Insert formatted comment into README.md
+      run: |
+        # 提取 commit message 中的字段
+        if [[ "$COMMIT_MESSAGE" =~ \[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\]\[(.*)\] ]]; then
+          TIME=${BASH_REMATCH[1]}
+          TITLE=${BASH_REMATCH[2]}
+          CONF=${BASH_REMATCH[3]}
+          YEAR=${BASH_REMATCH[4]}
+          NAME=${BASH_REMATCH[5]}
+        fi
+        
+        # 确认PPT文件的扩展名
+        PPT_EXTENSION=$(ls PPT/${TIME}.pptx 2>/dev/null && echo "pptx" || echo "ppt")
+        
+        # 创建插入的格式
+        FORMATTED_MESSAGE="| $TIME | $TITLE | $CONF | $YEAR | [PDF](./PDF/${TIME}.pdf)/[PPT](./PPT/${TIME}.${PPT_EXTENSION}) | $NAME |"
+        
+        # 插入到 README.md 的第 17 行
+        sed -i "17i $FORMATTED_MESSAGE" README.md
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add PDF/${TIME}.pdf PPT/${TIME}.* README.md
+        git commit -m "Renamed files and updated README with commit message: $COMMIT_MESSAGE"
+        git push
